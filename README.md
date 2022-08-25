@@ -59,7 +59,7 @@ python train_e2e.py --tuning_mode {finetune/adaptertune} --epoch 5 --learning_ra
 ```
 cd seq2seq;
 
-python train_e2e.py --tuning_mode finetune --epoch 5 --learning_rate 0.00005 --mode webnlg --bsz 5 --seed 101
+python train_bart.py --tuning_mode finetune --epoch 5 --learning_rate 0.00005 --mode xsum --bsz 5 --seed 101
 ```
 -----------------------------------------------------
 
@@ -92,3 +92,5 @@ For details of the methods and results, please refer to our paper.
       primaryClass={cs.CL}
 }
 ```
+
+https://worksheets.codalab.org/worksheets/0x16e0c8e7ab1f4b22aaccddc8b586541f

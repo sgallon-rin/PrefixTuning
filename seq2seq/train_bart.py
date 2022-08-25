@@ -1,6 +1,12 @@
 import os, sys
 import argparse
 
+# added by sgallon
+HOME_DIR = "/home/lr/shenjl/research/ref-code/PrefixTuning"
+XSUM_DATA_DIR = "/home/lr/shenjl/research/ref-code/PrefixTuning/data_seq2seq"
+MODEL_DIR = "/home/lr/shenjl/research/ref-code/PrefixTuning/models"
+# end by sgallon
+
 # example: python train_run.py keyword temp_keyword _
 if not sys.warnoptions:
     import warnings
@@ -34,7 +40,7 @@ if __name__ == '__main__':
     # training parameters.
     parser.add_argument('--use_dropout', type=str, default='no', help='')
     parser.add_argument('--seed', type=int, default=101, help='') # old is 42
-    parser.add_argument('--bsz', type=int, default=10, help='')
+    parser.add_argument('--bsz', type=int, default=10, help='') # batch size
     parser.add_argument('--use_big', type=str, default='no', help='')
     parser.add_argument('--epoch', type=int, default=5, help='')
     parser.add_argument('--max_steps', type=int, default=400, help='')
@@ -114,8 +120,8 @@ if __name__ == '__main__':
 
 
     elif args.mode == 'xsum':
-        data_dir = 'xsum'
-        folder_name = "xsum_models/"
+        data_dir = os.path.join(XSUM_DATA_DIR, 'xsum')
+        folder_name = os.path.join(MODEL_DIR, "xsum_models/")
         max_source_length = 1024
         max_target_length = 60
         val_max_target_length = 60
@@ -131,8 +137,8 @@ if __name__ == '__main__':
         assert args.optim_prefix == 'yes'
 
     elif args.mode == 'xsum_news':
-        data_dir = '/data/xsum_news'
-        folder_name = "/data/xsum_news_models/"
+        data_dir = os.path.join(XSUM_DATA_DIR, 'xsum_news')
+        folder_name = os.path.join(MODEL_DIR, "xsum_news_models/")
         max_source_length = 512
         max_target_length = 60
         val_max_target_length = 60
@@ -146,8 +152,8 @@ if __name__ == '__main__':
             xsum_app += ' --fp16 --fp16_opt_level O1 '
 
     elif args.mode == 'xsum_news_sport':
-        data_dir = '/data/xsum_topic-news-sports'
-        folder_name = "/data/xsum_news_sport_models/"
+        data_dir = os.path.join(XSUM_DATA_DIR, 'xsum_topic-news-sports')
+        folder_name = os.path.join(MODEL_DIR, "xsum_news_sport_models/")
         max_source_length = 512
         max_target_length = 60
         val_max_target_length = 60
@@ -200,7 +206,7 @@ if __name__ == '__main__':
                      + 'w={}_'.format(args.weight_decay) + 's={}'.format(args.seed) + '_d={}'.format(args.use_deep[:1]) +\
                      '_m={}'.format(args.mid_dim)
     else:
-        Model_FILE = dir_name
+        Model_FILE = args.dir_name
 
     if args.notes is not None:
         Model_FILE += '_{}'.format(args.notes)
