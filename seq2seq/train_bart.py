@@ -36,6 +36,8 @@ if __name__ == '__main__':
 
     parser.add_argument('--fp16', type=str, default='no', help='')
 
+    parser.add_argument('--gpus', type=int, default=1, help='')
+
 
     # training parameters.
     parser.add_argument('--use_dropout', type=str, default='no', help='')
@@ -262,12 +264,12 @@ if __name__ == '__main__':
                       '--do_train ' \
                       '--label_smoothing {} ' \
                       '--use_deep {} ' \
-                      '--gpus 1 ' \
+                      '--gpus {} ' \
                       '--learning_rate {} ' \
                       '--train_batch_size {} ' \
                       '--eval_batch_size {} ' \
                       '--num_train_epochs {} '.format(OLD_MODEL, Model_FILE, data_dir, args.tuning_mode, args.preseqlen, args.label_smoothing, args.use_deep,
-                                                      args.learning_rate, args.bsz, args.bsz, args.epoch)
+                                                      args.gpus, args.learning_rate, args.bsz, args.bsz, args.epoch)
     else:
         if args.tuning_mode == 'finetune':
             assert args.finetune_model_path is not None
@@ -282,12 +284,12 @@ if __name__ == '__main__':
                           '--preseqlen {} ' \
                           '--do_predict ' \
                           '--use_deep {} ' \
-                          '--gpus 1 ' \
+                          '--gpus {} ' \
                           '--train_batch_size {} ' \
                           '--eval_batch_size {} ' \
                           '--length_penalty {} ' \
                           '--num_train_epochs {} '.format(args.finetune_model_path, Model_FILE, data_dir,
-                                                          args.tuning_mode, args.preseqlen,  args.use_deep,
+                                                          args.tuning_mode, args.preseqlen,  args.use_deep, args.gpus,
                                                           10, 10, args.length_pen, args.epoch)
         else:
             assert args.prefix_model_path is not None
@@ -304,13 +306,13 @@ if __name__ == '__main__':
                           '--preseqlen {} ' \
                           '--do_predict ' \
                           '--use_deep {} ' \
-                          '--gpus 1 ' \
+                          '--gpus {} ' \
                           '--train_batch_size {} ' \
                           '--eval_batch_size {} ' \
                           '--seed {} ' \
                           '--length_penalty {} ' \
                           '--num_train_epochs {} '.format(OLD_MODEL, args.prefix_model_path, Model_FILE, data_dir,
-                                                          args.tuning_mode, args.preseqlen, args.use_deep,
+                                                          args.tuning_mode, args.preseqlen, args.use_deep, args.gpus,
                                                           8, 8, args.seed, args.length_pen, args.epoch)
 
 
