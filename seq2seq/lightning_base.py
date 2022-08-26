@@ -786,7 +786,7 @@ def generic_train(
         # weights_summary=None,
         callbacks=[logging_callback] + extra_callbacks,
         logger=logger,
-        checkpoint_callback=checkpoint_callback,
+        # checkpoint_callback=checkpoint_callback,
         #early_stop_callback=early_stopping_callback,
         **train_params,
     )
