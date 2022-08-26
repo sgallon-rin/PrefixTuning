@@ -2,3 +2,5 @@
 .DS_Store
 data_seq2seq
 models
+transformers/build
+transformers/src

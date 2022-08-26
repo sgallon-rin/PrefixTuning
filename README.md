@@ -94,3 +94,21 @@ For details of the methods and results, please refer to our paper.
 ```
 
 https://worksheets.codalab.org/worksheets/0x16e0c8e7ab1f4b22aaccddc8b586541f
+
+## Environment
+
+```shell
+conda create -n prefix_tuning python=3.8
+conda activate prefix_tuning
+! pip install transformers/
+pip install pytorch-lightning GitPython rouge_score sacrebleu
+```
+
+```
+python=3.8
+# transformers # in this rep
+pytorch-lightning
+GitPython
+rouge_score
+sacrebleu
+```
