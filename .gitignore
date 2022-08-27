@@ -4,3 +4,4 @@ data_seq2seq
 models
 transformers/build
 transformers/src/transformers.egg-info
+__pycache__
