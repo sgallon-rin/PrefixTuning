@@ -34,14 +34,14 @@ they are set to default of good hyperparameters, and can be used to tune hyperpa
 -----------------------------------------------------
 ## Train via prefix-tuning:
 
-```python
+```shell
 cd gpt2;
 
 python train_e2e.py --optim_prefix yes --preseqlen 5 --epoch 5 --learning_rate 0.00005 --mode webnlg --bsz 5 --seed 101
 ```
 
 
-```python
+```shell
 cd seq2seq; 
 
 python train_bart.py --mode xsum --preseqlen 200 --do_train yes --fp16 yes --bsz 16  --epoch 30  --gradient_accumulation_step 3 --learning_rate 0.00005  --mid_dim 800
@@ -65,14 +65,14 @@ python train_bart.py --tuning_mode finetune --epoch 5 --learning_rate 0.00005 --
 
 ## Decode:
 
-```python
+```shell
 cd gpt2;
 
 python gen.py {data2text/webnlg/...} yes test {checkpoint_path} no
 ```
 
 
-```python
+```shell
 cd seq2seq; 
 
 python train_bart.py --mode xsum --do_train no --prefix_model_path {checkpoint_path} --preseqlen {same as training} --mid_dim {same as training}
