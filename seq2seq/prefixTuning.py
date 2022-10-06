@@ -1,7 +1,7 @@
 # from transformers import Trainer
 import torch
 from transformers import PreTrainedModel, GPT2PreTrainedModel, GPT2Tokenizer, PretrainedBartModel
-from torch import  nn
+from torch import nn
 
 
 class PrefixTuning(PretrainedBartModel):

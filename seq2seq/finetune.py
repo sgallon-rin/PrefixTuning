@@ -17,7 +17,6 @@ from torch.utils.data import DataLoader
 
 from callbacks import Seq2SeqLoggingCallback, get_checkpoint_callback, get_early_stopping_callback
 from transformers import MBartTokenizer, T5ForConditionalGeneration
-from transformers.models.bart.modeling_bart import shift_tokens_right
 from utils import (
     ROUGE_KEYS,
     LegacySeq2SeqDataset,
@@ -33,8 +32,8 @@ from utils import (
     pickle_save,
     save_git_info,
     use_task_specific_params,
+    shift_tokens_right
 )
-
 
 # need the parent dir module
 # sys.path.insert(2, str(Path(__file__).resolve().parents[1]))
@@ -120,7 +119,7 @@ class PrefixSummarizationModule(PrefixTransformer):
 
         self.eval_max_length = 62
         self.eval_min_length = 11
-        self.eval_beams =6
+        self.eval_beams = 6
         print('for deocding, eval_max_length={}, '
               'eval_min_length={}, eval_beams={}'.format(self.eval_max_length, self.eval_min_length, self.eval_beams))
 
@@ -341,31 +340,31 @@ class PrefixSummarizationModule(PrefixTransformer):
         add_generic_args(parser, root_dir)
         parser.add_argument(
             "--max_source_length",
-            default=512, #1024
+            default=512,  # 1024
             type=int,
             help="The maximum total input sequence length after tokenization. Sequences longer "
-            "than this will be truncated, sequences shorter will be padded.",
+                 "than this will be truncated, sequences shorter will be padded.",
         )
         parser.add_argument(
             "--max_target_length",
-            default=56, #56
+            default=56,  # 56
             type=int,
             help="The maximum total input sequence length after tokenization. Sequences longer "
-            "than this will be truncated, sequences shorter will be padded.",
+                 "than this will be truncated, sequences shorter will be padded.",
         )
         parser.add_argument(
             "--val_max_target_length",
-            default=142,  #142 # these defaults are optimized for CNNDM. For xsum, see README.md.
+            default=142,  # 142 # these defaults are optimized for CNNDM. For xsum, see README.md.
             type=int,
             help="The maximum total input sequence length after tokenization. Sequences longer "
-            "than this will be truncated, sequences shorter will be padded.",
+                 "than this will be truncated, sequences shorter will be padded.",
         )
         parser.add_argument(
             "--test_max_target_length",
-            default=142, #142
+            default=142,  # 142
             type=int,
             help="The maximum total input sequence length after tokenization. Sequences longer "
-            "than this will be truncated, sequences shorter will be padded.",
+                 "than this will be truncated, sequences shorter will be padded.",
         )
         parser.add_argument("--freeze_encoder", action="store_true")
         parser.add_argument("--freeze_embeds", action="store_true")
@@ -732,7 +731,7 @@ def train(args, model=None) -> SummarizationModule:
     Path(args.output_dir).mkdir(exist_ok=True)
     if len(os.listdir(args.output_dir)) > 3 and args.do_train:
         print('Output directory ({}) already exists and is not empty, overwrite to it...'.format(args.output_dir))
-        
+
         # raise ValueError("Output directory ({}) already exists and is not empty.".format(args.output_dir))
     if model is None:
         if "summarization" in args.task_mode:
@@ -759,7 +758,9 @@ def train(args, model=None) -> SummarizationModule:
         args,
         # TODO: callback change in new pl ver - sgallon
         logging_callback=Seq2SeqLoggingCallback(),
-        checkpoint_callback=get_checkpoint_callback(args.output_dir, model.val_metric, args.save_top_k, lower_is_better), #LISA
+        checkpoint_callback=get_checkpoint_callback(args.output_dir, model.val_metric, args.save_top_k,
+                                                    lower_is_better),
+        # LISA
         early_stopping_callback=es_callback,
         # logger=logger,  # default True
     )
@@ -845,4 +846,3 @@ if __name__ == "__main__":
     else:
         train(args)
     # train(args)
-
