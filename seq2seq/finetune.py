@@ -23,7 +23,7 @@ from utils import (
     LegacySeq2SeqDataset,
     Seq2SeqDataset,
     assert_all_frozen,
-    calculate_bleu,
+    # calculate_bleu,
     calculate_rouge,
     flatten_list,
     freeze_params,
@@ -37,12 +37,12 @@ from utils import (
 
 
 # need the parent dir module
-sys.path.insert(2, str(Path(__file__).resolve().parents[1]))
-print(sys.path)
+# sys.path.insert(2, str(Path(__file__).resolve().parents[1]))
+# print(sys.path)
 from lightning_base import BaseTransformer, add_generic_args, generic_train, PrefixTransformer  # noqa
 
 
-logger = logging.getLogger(__name__)
+# logger = logging.getLogger(__name__)
 
 
 class PrefixSummarizationModule(PrefixTransformer):
@@ -52,13 +52,13 @@ class PrefixSummarizationModule(PrefixTransformer):
     default_val_metric = "rouge2"
 
     def __init__(self, hparams, **kwargs):
-        if hparams.sortish_sampler and hparams.gpus > 1:
-            hparams.replace_sampler_ddp = False
-        elif hparams.max_tokens_per_batch is not None:
-            if hparams.gpus > 1:
-                raise NotImplementedError("Dynamic Batch size does not work for multi-gpu training")
-            if hparams.sortish_sampler:
-                raise ValueError("--sortish_sampler and --max_tokens_per_batch may not be used simultaneously")
+        # if hparams.sortish_sampler and hparams.gpus > 1:
+        #     hparams.replace_sampler_ddp = False
+        # elif hparams.max_tokens_per_batch is not None:
+        #     if hparams.gpus > 1:
+        #         raise NotImplementedError("Dynamic Batch size does not work for multi-gpu training")
+        #     if hparams.sortish_sampler:
+        #         raise ValueError("--sortish_sampler and --max_tokens_per_batch may not be used simultaneously")
         super().__init__(hparams, num_labels=None, mode=self.mode, **kwargs)
         use_task_specific_params(self.model, "summarization")
         save_git_info(self.hparams.output_dir)
@@ -375,9 +375,7 @@ class PrefixSummarizationModule(PrefixTransformer):
         parser.add_argument("--n_train", type=int, default=-1, required=False, help="# examples. -1 means use all.")
         parser.add_argument("--n_val", type=int, default=500, required=False, help="# examples. -1 means use all.")
         parser.add_argument("--n_test", type=int, default=-1, required=False, help="# examples. -1 means use all.")
-        parser.add_argument(
-            "--task_mode", type=str, default="summarization", required=False, help="# examples. -1 means use all."
-        )
+        parser.add_argument("--task_mode", type=str, default="summarization", required=False)
         parser.add_argument("--label_smoothing", type=float, default=0.0, required=False)
         parser.add_argument("--src_lang", type=str, default="", required=False)
         parser.add_argument("--tgt_lang", type=str, default="", required=False)
@@ -652,85 +650,85 @@ class SummarizationModule(BaseTransformer):
     def test_dataloader(self) -> DataLoader:
         return self.get_dataloader("test", batch_size=self.hparams.eval_batch_size)
 
-    @staticmethod
-    def add_model_specific_args(parser, root_dir):
-        BaseTransformer.add_model_specific_args(parser, root_dir)
-        add_generic_args(parser, root_dir)
-        parser.add_argument(
-            "--max_source_length",
-            default=1024,
-            type=int,
-            help="The maximum total input sequence length after tokenization. Sequences longer "
-            "than this will be truncated, sequences shorter will be padded.",
-        )
-        parser.add_argument(
-            "--max_target_length",
-            default=100,
-            type=int,
-            help="The maximum total input sequence length after tokenization. Sequences longer "
-            "than this will be truncated, sequences shorter will be padded.",
-        )
-        parser.add_argument(
-            "--val_max_target_length",
-            default=100,  # these defaults are optimized for CNNDM. For xsum, see README.md.
-            type=int,
-            help="The maximum total input sequence length after tokenization. Sequences longer "
-            "than this will be truncated, sequences shorter will be padded.",
-        )
-        parser.add_argument(
-            "--test_max_target_length",
-            default=100,
-            type=int,
-            help="The maximum total input sequence length after tokenization. Sequences longer "
-            "than this will be truncated, sequences shorter will be padded.",
-        )
-        parser.add_argument("--freeze_encoder", action="store_true")
-        parser.add_argument("--freeze_embeds", action="store_true")
-        parser.add_argument("--sortish_sampler", action="store_true", default=False)
-        parser.add_argument("--max_tokens_per_batch", type=int, default=None)
-        parser.add_argument("--logger_name", type=str, choices=["default", "wandb", "wandb_shared"], default="default")
-        parser.add_argument("--n_train", type=int, default=-1, required=False, help="# examples. -1 means use all.")
-        parser.add_argument("--n_val", type=int, default=500, required=False, help="# examples. -1 means use all.")
-        parser.add_argument("--n_test", type=int, default=-1, required=False, help="# examples. -1 means use all.")
-        parser.add_argument(
-            "--task", type=str, default="summarization", required=False, help="# examples. -1 means use all."
-        )
-        parser.add_argument("--label_smoothing", type=float, default=0.0, required=False)
-        parser.add_argument("--src_lang", type=str, default="", required=False)
-        parser.add_argument("--tgt_lang", type=str, default="", required=False)
-        parser.add_argument("--eval_beams", type=int, default=None, required=False)
-        parser.add_argument(
-            "--val_metric", type=str, default=None, required=False, choices=["bleu", "rouge2", "loss", None]
-        )
-        parser.add_argument("--eval_max_gen_length", type=int, default=None, help="never generate more than n tokens")
-        parser.add_argument("--length_penalty", type=float, default=1.0, help="never generate more than n tokens")
-        parser.add_argument("--save_top_k", type=int, default=1, required=False, help="How many checkpoints to save")
-        parser.add_argument(
-            "--early_stopping_patience",
-            type=int,
-            default=-1,
-            required=False,
-            help="-1 means never early stop. early_stopping_patience is measured in validation checks, not epochs. So val_check_interval will effect it.",
-        )
-        return parser
+    # @staticmethod
+    # def add_model_specific_args(parser, root_dir):
+    #     BaseTransformer.add_model_specific_args(parser, root_dir)
+    #     add_generic_args(parser, root_dir)
+    #     parser.add_argument(
+    #         "--max_source_length",
+    #         default=1024,
+    #         type=int,
+    #         help="The maximum total input sequence length after tokenization. Sequences longer "
+    #         "than this will be truncated, sequences shorter will be padded.",
+    #     )
+    #     parser.add_argument(
+    #         "--max_target_length",
+    #         default=100,
+    #         type=int,
+    #         help="The maximum total input sequence length after tokenization. Sequences longer "
+    #         "than this will be truncated, sequences shorter will be padded.",
+    #     )
+    #     parser.add_argument(
+    #         "--val_max_target_length",
+    #         default=100,  # these defaults are optimized for CNNDM. For xsum, see README.md.
+    #         type=int,
+    #         help="The maximum total input sequence length after tokenization. Sequences longer "
+    #         "than this will be truncated, sequences shorter will be padded.",
+    #     )
+    #     parser.add_argument(
+    #         "--test_max_target_length",
+    #         default=100,
+    #         type=int,
+    #         help="The maximum total input sequence length after tokenization. Sequences longer "
+    #         "than this will be truncated, sequences shorter will be padded.",
+    #     )
+    #     parser.add_argument("--freeze_encoder", action="store_true")
+    #     parser.add_argument("--freeze_embeds", action="store_true")
+    #     parser.add_argument("--sortish_sampler", action="store_true", default=False)
+    #     parser.add_argument("--max_tokens_per_batch", type=int, default=None)
+    #     parser.add_argument("--logger_name", type=str, choices=["default", "wandb", "wandb_shared"], default="default")
+    #     parser.add_argument("--n_train", type=int, default=-1, required=False, help="# examples. -1 means use all.")
+    #     parser.add_argument("--n_val", type=int, default=500, required=False, help="# examples. -1 means use all.")
+    #     parser.add_argument("--n_test", type=int, default=-1, required=False, help="# examples. -1 means use all.")
+    #     parser.add_argument(
+    #         "--task_mode", type=str, default="summarization", required=False, help="# examples. -1 means use all."
+    #     )
+    #     parser.add_argument("--label_smoothing", type=float, default=0.0, required=False)
+    #     parser.add_argument("--src_lang", type=str, default="", required=False)
+    #     parser.add_argument("--tgt_lang", type=str, default="", required=False)
+    #     parser.add_argument("--eval_beams", type=int, default=None, required=False)
+    #     parser.add_argument(
+    #         "--val_metric", type=str, default=None, required=False, choices=["bleu", "rouge2", "loss", None]
+    #     )
+    #     parser.add_argument("--eval_max_gen_length", type=int, default=None, help="never generate more than n tokens")
+    #     parser.add_argument("--length_penalty", type=float, default=1.0, help="never generate more than n tokens")
+    #     parser.add_argument("--save_top_k", type=int, default=1, required=False, help="How many checkpoints to save")
+    #     parser.add_argument(
+    #         "--early_stopping_patience",
+    #         type=int,
+    #         default=-1,
+    #         required=False,
+    #         help="-1 means never early stop. early_stopping_patience is measured in validation checks, not epochs. So val_check_interval will effect it.",
+    #     )
+    #     return parser
 
 
-class TranslationModule(SummarizationModule):
-    mode = "translation"
-    loss_names = ["loss"]
-    metric_names = ["bleu"]
-    default_val_metric = "bleu"
+# class TranslationModule(SummarizationModule):
+#     mode = "translation"
+#     loss_names = ["loss"]
+#     metric_names = ["bleu"]
+#     default_val_metric = "bleu"
+#
+#     def __init__(self, hparams, **kwargs):
+#         super().__init__(hparams, **kwargs)
+#         self.dataset_kwargs["src_lang"] = hparams.src_lang
+#         self.dataset_kwargs["tgt_lang"] = hparams.tgt_lang
+#
+#     def calc_generative_metrics(self, preds, target) -> dict:
+#         return calculate_bleu(preds, target)
 
-    def __init__(self, hparams, **kwargs):
-        super().__init__(hparams, **kwargs)
-        self.dataset_kwargs["src_lang"] = hparams.src_lang
-        self.dataset_kwargs["tgt_lang"] = hparams.tgt_lang
 
-    def calc_generative_metrics(self, preds, target) -> dict:
-        return calculate_bleu(preds, target)
-
-
-def main(args, model=None) -> SummarizationModule:
+def train(args, model=None) -> SummarizationModule:
     Path(args.output_dir).mkdir(exist_ok=True)
     if len(os.listdir(args.output_dir)) > 3 and args.do_train:
         print('Output directory ({}) already exists and is not empty, overwrite to it...'.format(args.output_dir))
@@ -743,31 +741,12 @@ def main(args, model=None) -> SummarizationModule:
             elif args.tuning_mode == 'finetune':
                 model: SummarizationModule = SummarizationModule(args)
             else:
-                assert False, 'invalid tuning_mode'
+                raise RuntimeError('invalid tuning_mode: {}'.format(args.tuning_mode))
         else:
-            model: SummarizationModule = TranslationModule(args)
-
+            raise RuntimeError('invalid task_mode: {}; must be summarization'.format(args.task_mode))
     # print(model)
     dataset = Path(args.data_dir).name
-
-    print(dataset)
-    if (
-        args.logger_name == "default"
-        or args.fast_dev_run
-        or str(args.output_dir).startswith("/tmp")
-        or str(args.output_dir).startswith("/var")
-    ):
-        logger = True  # don't pollute wandb logs unnecessarily
-    elif args.logger_name == "wandb":
-        from pytorch_lightning.loggers import WandbLogger
-
-        project = os.environ.get("WANDB_PROJECT", dataset)
-        logger = WandbLogger(name=model.output_dir.name, project=project)
-
-    elif args.logger_name == "wandb_shared":
-        from pytorch_lightning.loggers import WandbLogger
-
-        logger = WandbLogger(name=model.output_dir.name, project=f"hf_{dataset}")
+    # print(dataset)
 
     if args.early_stopping_patience >= 0:
         es_callback = get_early_stopping_callback(model.val_metric, args.early_stopping_patience)
@@ -778,10 +757,11 @@ def main(args, model=None) -> SummarizationModule:
     trainer: pl.Trainer = generic_train(
         model,
         args,
+        # TODO: callback change in new pl ver - sgallon
         logging_callback=Seq2SeqLoggingCallback(),
         checkpoint_callback=get_checkpoint_callback(args.output_dir, model.val_metric, args.save_top_k, lower_is_better), #LISA
         early_stopping_callback=es_callback,
-        logger=logger,
+        # logger=logger,  # default True
     )
     pickle_save(model.hparams, model.output_dir / "hparams.pkl")
     if not args.do_predict:
@@ -799,7 +779,7 @@ def main(args, model=None) -> SummarizationModule:
     return model
 
 
-def eval(args, model=None) -> SummarizationModule:
+def predict(args, model=None):
     Path(args.output_dir).mkdir(exist_ok=True)
     if len(os.listdir(args.output_dir)) > 3 and args.do_train:
         raise ValueError("Output directory ({}) already exists and is not empty.".format(args.output_dir))
@@ -808,20 +788,20 @@ def eval(args, model=None) -> SummarizationModule:
             if args.tuning_mode == 'prefixtune':
                 model = PrefixSummarizationModule(args)
             elif args.tuning_mode == 'finetune':
-                model: SummarizationModule = SummarizationModule(args)
+                model = SummarizationModule(args)
             else:
-                assert False, 'invalid tuning_mode'
+                raise RuntimeError('invalid tuning_mode: {}'.format(args.tuning_mode))
         else:
-            model: SummarizationModule = TranslationModule(args)
+            raise RuntimeError('invalid task_mode: {}; must be summarization'.format(args.task_mode))
 
     # print(model)
     dataset = Path(args.data_dir).name
 
     with torch.no_grad():
         model.eval()
-        print(dataset)
+        # print(dataset)
         model = model.cuda()
-        print(model.device)
+        # print(model.device)
         data_loader = model.test_dataloader()
         out_lst = []
         for batch_idx, batch in enumerate(data_loader):
@@ -842,7 +822,7 @@ def eval(args, model=None) -> SummarizationModule:
 
     out_1 = args.model_name_or_path if args.tuning_mode == 'finetune' else args.prefixModel_name_or_path
     out_path = os.path.join(out_1, 'test_beam_{}'.format(args.length_penalty))
-    print('writing the test results to ', out_path)
+    # print('writing the test results to ', out_path)
     with open(out_path, 'w') as f:
         for preds in result['preds']:
             print(preds, file=f)
@@ -851,16 +831,6 @@ def eval(args, model=None) -> SummarizationModule:
     for k, v in result.items():
         if k != 'preds':
             print(k, v)
-    # final evaluation.
-    # gold_dir = 'e2e/test_gold.target'
-    # os.system("python /u/scr/xlisali/e2e-metrics/measure_scores.py "
-    #           "{} {} -p  -t -H ".format(gold_dir, out_path))
-
-    # out_file_eval = curr_dir + '_eval'
-    # print(out_file_eval, '\n', gold_dir, '\n', curr_dir)
-    # os.system("python /u/scr/xlisali/e2e-metrics/measure_scores.py "
-    #           "{} {} -p  -t -H >> {}".format(gold_dir, curr_dir, out_file_eval))
-
 
 
 if __name__ == "__main__":
@@ -871,7 +841,8 @@ if __name__ == "__main__":
     args = parser.parse_args()
     pl.seed_everything(args.seed)
     if args.do_predict:
-        eval(args)
+        predict(args)
     else:
-        main(args)
+        train(args)
+    # train(args)
 

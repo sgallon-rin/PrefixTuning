@@ -14,7 +14,7 @@ import numpy as np
 import torch
 import torch.distributed as dist
 from rouge_score import rouge_scorer, scoring
-from sacrebleu import corpus_bleu
+# from sacrebleu import corpus_bleu
 from torch import nn
 from torch.utils.data import Dataset, Sampler
 
@@ -22,12 +22,12 @@ from transformers import BartTokenizer
 from transformers.file_utils import cached_property
 
 
-try:
-    from fairseq.data.data_utils import batch_by_size
-
-    FAIRSEQ_AVAILABLE = True
-except (ImportError, ModuleNotFoundError):
-    FAIRSEQ_AVAILABLE = False
+# try:
+#     from fairseq.data.data_utils import batch_by_size
+#
+#     FAIRSEQ_AVAILABLE = True
+# except (ImportError, ModuleNotFoundError):
+#     FAIRSEQ_AVAILABLE = False
 
 
 def label_smoothed_nll_loss(lprobs, target, epsilon, ignore_index=-100):
@@ -69,9 +69,9 @@ def lmap(f: Callable, x: Iterable) -> List:
     return list(map(f, x))
 
 
-def calculate_bleu(output_lns, refs_lns, **kwargs) -> dict:
-    """Uses sacrebleu's corpus_bleu implementation."""
-    return {"bleu": round(corpus_bleu(output_lns, [refs_lns], **kwargs).score, 4)}
+# def calculate_bleu(output_lns, refs_lns, **kwargs) -> dict:
+#     """Uses sacrebleu's corpus_bleu implementation."""
+#     return {"bleu": round(corpus_bleu(output_lns, [refs_lns], **kwargs).score, 4)}
 
 
 def trim_batch(
@@ -363,9 +363,9 @@ def save_json(content, path, indent=4, **json_dump_kwargs):
         json.dump(content, f, indent=indent, **json_dump_kwargs)
 
 
-def load_json(path):
-    with open(path) as f:
-        return json.load(f)
+# def load_json(path):
+#     with open(path) as f:
+#         return json.load(f)
 
 
 def get_git_info():
@@ -407,8 +407,8 @@ def grad_status(model: nn.Module) -> Iterable:
     return (par.requires_grad for par in model.parameters())
 
 
-def any_requires_grad(model: nn.Module) -> bool:
-    return any(grad_status(model))
+# def any_requires_grad(model: nn.Module) -> bool:
+#     return any(grad_status(model))
 
 
 def assert_all_frozen(model):
@@ -418,48 +418,48 @@ def assert_all_frozen(model):
     assert not any(model_grads), f"{n_require_grad/npars:.1%} of {npars} weights require grad"
 
 
-def assert_not_all_frozen(model):
-    model_grads: List[bool] = list(grad_status(model))
-    npars = len(model_grads)
-    assert any(model_grads), f"none of {npars} weights require grad"
+# def assert_not_all_frozen(model):
+#     model_grads: List[bool] = list(grad_status(model))
+#     npars = len(model_grads)
+#     assert any(model_grads), f"none of {npars} weights require grad"
 
 
 # CLI Parsing utils
 
 
-def parse_numeric_n_bool_cl_kwargs(unparsed_args: List[str]) -> Dict[str, Union[int, float, bool]]:
-    """
-    Parse an argv list of unspecified command line args to a dict.
-    Assumes all values are either numeric or boolean in the form of true/false.
-    """
-    result = {}
-    assert len(unparsed_args) % 2 == 0, f"got odd number of unparsed args: {unparsed_args}"
-    num_pairs = len(unparsed_args) // 2
-    for pair_num in range(num_pairs):
-        i = 2 * pair_num
-        assert unparsed_args[i].startswith("--")
-        if unparsed_args[i + 1].lower() == "true":
-            value = True
-        elif unparsed_args[i + 1].lower() == "false":
-            value = False
-        else:
-            try:
-                value = int(unparsed_args[i + 1])
-            except ValueError:
-                value = float(unparsed_args[i + 1])  # this can raise another informative ValueError
-
-        result[unparsed_args[i][2:]] = value
-    return result
-
-
-def write_txt_file(ordered_tgt, path):
-    f = Path(path).open("w")
-    for ln in ordered_tgt:
-        f.write(ln + "\n")
-        f.flush()
+# def parse_numeric_n_bool_cl_kwargs(unparsed_args: List[str]) -> Dict[str, Union[int, float, bool]]:
+#     """
+#     Parse an argv list of unspecified command line args to a dict.
+#     Assumes all values are either numeric or boolean in the form of true/false.
+#     """
+#     result = {}
+#     assert len(unparsed_args) % 2 == 0, f"got odd number of unparsed args: {unparsed_args}"
+#     num_pairs = len(unparsed_args) // 2
+#     for pair_num in range(num_pairs):
+#         i = 2 * pair_num
+#         assert unparsed_args[i].startswith("--")
+#         if unparsed_args[i + 1].lower() == "true":
+#             value = True
+#         elif unparsed_args[i + 1].lower() == "false":
+#             value = False
+#         else:
+#             try:
+#                 value = int(unparsed_args[i + 1])
+#             except ValueError:
+#                 value = float(unparsed_args[i + 1])  # this can raise another informative ValueError
+#
+#         result[unparsed_args[i][2:]] = value
+#     return result
 
 
-def chunks(lst, n):
-    """Yield successive n-sized chunks from lst."""
-    for i in range(0, len(lst), n):
-        yield lst[i : i + n]
+# def write_txt_file(ordered_tgt, path):
+#     f = Path(path).open("w")
+#     for ln in ordered_tgt:
+#         f.write(ln + "\n")
+#         f.flush()
+
+
+# def chunks(lst, n):
+#     """Yield successive n-sized chunks from lst."""
+#     for i in range(0, len(lst), n):
+#         yield lst[i : i + n]

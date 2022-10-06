@@ -172,7 +172,7 @@ class PrefixTransformer(pl.LightningModule):
         config_prefix._my_arg_control = True
         config_prefix.train_weights = False
         config_prefix.optim_prefix = optim_prefix_bool
-        config_prefix.use_deep = self.hparams.use_deep 
+        config_prefix.use_deep = self.hparams.use_deep
         config_prefix.preseqlen = self.hparams.preseqlen
         config_prefix.use_infix = (self.hparams.format_mode == 'infix')
         config_prefix.format_mode = self.hparams.format_mode
@@ -760,8 +760,6 @@ def generic_train(
 
     if logging_callback is None:
         logging_callback = LoggingCallback()
-
-
 
     train_params = {}
 
