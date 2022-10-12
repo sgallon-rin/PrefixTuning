@@ -736,8 +736,8 @@ def generic_train(
 
     if checkpoint_callback is None:
         checkpoint_callback = pl.callbacks.ModelCheckpoint(
-            # filepath=args.output_dir, prefix="checkpoint", monitor="val_loss", mode="min", save_top_k=1
-            dirpath = args.output_dir, monitor = "val_loss", mode = "min", save_top_k = 1
+            filepath=args.output_dir, prefix="checkpoint", monitor="val_loss", mode="min", save_top_k=1
+            # dirpath=args.output_dir, monitor="val_loss", mode="min", save_top_k=1
         )
     # add custom checkpoints
     # LISA
@@ -747,8 +747,8 @@ def generic_train(
     #     )
 
     #get_checkpoint_callback(args.output_dir, model.val_metric, args.save_top_k, lower_is_better)
-    # checkpoint_callback = OurModelCheckPoint(dirpath=args.output_dir, prefix="checkpoint", monitor="rouge2", mode="max", save_top_k=-1)
-    checkpoint_callback = OurModelCheckPoint(dirpath=args.output_dir, monitor="rouge2", mode="max", save_top_k=-1)
+    checkpoint_callback = OurModelCheckPoint(dirpath=args.output_dir, prefix="checkpoint", monitor="rouge2", mode="max", save_top_k=-1)
+    # checkpoint_callback = OurModelCheckPoint(dirpath=args.output_dir, monitor="rouge2", mode="max", save_top_k=-1)
 
     # checkpoint_callback = OurModelCheckPoint(
     #     filepath=os.path.join(args.output_dir, exp),

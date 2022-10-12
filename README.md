@@ -97,6 +97,17 @@ https://worksheets.codalab.org/worksheets/0x16e0c8e7ab1f4b22aaccddc8b586541f
 
 ## Environment
 
+https://github.com/XiangLi1999/PrefixTuning/issues/29
+
+```shell
+conda env create -f environment.yml
+conda activate prefix-tuning
+pip install pytorch-lightning==0.9.0
+```
+
+
+### old
+
 ```shell
 conda create -n prefix_tuning python=3.8
 conda activate prefix_tuning
