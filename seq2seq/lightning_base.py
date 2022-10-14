@@ -580,7 +580,7 @@ class BaseTransformer(pl.LightningModule):
     def on_save_checkpoint(self, checkpoint: Dict[str, Any], filepath=None) -> None:
 
         save_path = filepath #self.output_dir.joinpath("checkpoint-curr_best")
-        print('the suggested save_path is {}, saving to {}'.format(filepath[:-5], save_path))
+        print('the suggested save_path is {}, saving to {}'.format(filepath, save_path))
         # save_path = self.output_dir.joinpath("best_tfmr")
         self.model.config.save_step = self.step_count
         self.model.save_pretrained(save_path)
