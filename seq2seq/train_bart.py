@@ -11,7 +11,7 @@ MODEL_DIR = "/home/lr/shenjl/research/ref-code/PrefixTuning/models"
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Prefix Tuning training args.')
     parser.add_argument('--mode', type=str, default='xsum', help='',
-                        choices=['xsum', 'xsum_news', 'xsum_news_sport'])
+                        choices=['xsum', 'xsum_news', 'xsum_news_sport', 'toy_xsum_10'])
     parser.add_argument('--tuning_mode', type=str, default='prefixtune', help='',
                         choices=['prefixtune', 'finetune', 'finetune-top', 'bothtune', 'adaptertune'])
     parser.add_argument('--optim_prefix', type=str, default='yes', help='', choices=['yes', 'no'])
@@ -66,6 +66,7 @@ if __name__ == '__main__':
     else:
         load_prefix_model = False
 
+    # args.mode is dataset
     if args.mode == 'xsum':
         data_dir = os.path.join(XSUM_DATA_DIR, 'xsum')
         folder_name = os.path.join(MODEL_DIR, "xsum_models/")
@@ -103,7 +104,18 @@ if __name__ == '__main__':
                                                          val_max_target_length, test_max_target_length)
         if args.fp16 == 'yes':
             xsum_app += ' --fp16 --fp16_opt_level O1 '
-
+    elif args.mode == 'toy_xsum_10':  # toy dataset for test by sgallon
+        data_dir = os.path.join(XSUM_DATA_DIR, 'toy_xsum_10')
+        folder_name = os.path.join(MODEL_DIR, "toy_xsum_10/")
+        max_source_length = 1024
+        max_target_length = 60
+        val_max_target_length = 60
+        test_max_target_length = 100
+        xsum_app = ' --max_source_length {} --max_target_length {} --val_max_target_length {} ' \
+                   '--test_max_target_length {} '.format(max_source_length, max_target_length,
+                                                         val_max_target_length, test_max_target_length)
+        if args.fp16 == 'yes':
+            xsum_app += ' --fp16 --fp16_opt_level O1 '
     if not os.path.isdir(folder_name):
         os.mkdir(folder_name)
 
@@ -144,8 +156,8 @@ if __name__ == '__main__':
 
     app += xsum_app
 
-    if OLD_MODEL == 'gpt2-large':
-        app += ' --cache_dir /u/scr/xlisali/contrast_LM/transformers/examples/control/gpt2-large-s3 '
+    # if OLD_MODEL == 'gpt2-large':
+    #     app += ' --cache_dir /u/scr/xlisali/contrast_LM/transformers/examples/control/gpt2-large-s3 '
 
     if args.tuning_mode == 'finetune-top':
         app += ' --top_layers {} '.format(args.top_layers)
