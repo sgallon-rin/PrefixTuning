@@ -813,7 +813,7 @@ def predict(args, model=None):
             # print(batch['input_ids'].device, model.device)
             out = model.test_step(batch, batch_idx)
             out_lst.append(out)
-            print(out['preds'])
+            # print(out['preds'])
             # batch = model.transfer_batch_to_device(batch, 'cpu')
         result = model.test_epoch_end(out_lst)
 
