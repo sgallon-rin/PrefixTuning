@@ -100,10 +100,8 @@ https://worksheets.codalab.org/worksheets/0x16e0c8e7ab1f4b22aaccddc8b586541f
 https://github.com/XiangLi1999/PrefixTuning/issues/29
 
 ```shell
-conda env create -f environment.yml -n prefix-tuning
+conda env create -f environment.yml
 conda activate prefix-tuning
-cd transformers
-pip install -e .
 pip install pytorch-lightning==0.9.0
 ```
 
