@@ -840,6 +840,7 @@ if __name__ == "__main__":
     parser = PrefixSummarizationModule.add_model_specific_args(parser, os.getcwd())
 
     args = parser.parse_args()
+    print(args)
     pl.seed_everything(args.seed)
     if args.do_predict:
         predict(args)
