@@ -22,6 +22,7 @@ from transformers import (
     AutoTokenizer,
     PretrainedConfig,
     PreTrainedTokenizer,
+    MBartForConditionalGeneration
 )
 from transformers.optimization import (
     Adafactor,
@@ -132,10 +133,17 @@ class PrefixTransformer(pl.LightningModule):
 
 
         if tokenizer is None:
-            self.tokenizer = AutoTokenizer.from_pretrained(
-                self.hparams.tokenizer_name if self.hparams.tokenizer_name else self.hparams.model_name_or_path,
-                cache_dir=cache_dir,
-            )
+            if "mbart" in hparams.old_model_name:
+                self.tokenizer = AutoTokenizer.from_pretrained(
+                    self.hparams.tokenizer_name if self.hparams.tokenizer_name else self.hparams.model_name_or_path,
+                    cache_dir=cache_dir,
+                    src_lang=hparams.src_lang, tgt_lang=hparams.tgt_lang
+                )
+            else:
+                self.tokenizer = AutoTokenizer.from_pretrained(
+                    self.hparams.tokenizer_name if self.hparams.tokenizer_name else self.hparams.model_name_or_path,
+                    cache_dir=cache_dir,
+                )
         else:
             self.tokenizer: PreTrainedTokenizer = tokenizer
 
@@ -145,12 +153,20 @@ class PrefixTransformer(pl.LightningModule):
 
         self.seq2seq_model_type = MODEL_MODES[mode]
         if seq2seq_model is None:
-            self.seq2seq_model = BartForConditionalGeneration.from_pretrained(
-                self.hparams.model_name_or_path,
-                from_tf=bool(".ckpt" in self.hparams.model_name_or_path),
-                config=self.config,
-                cache_dir=cache_dir,
-            )
+            if "mbart" in hparams.old_model_name:
+                self.seq2seq_model = MBartForConditionalGeneration.from_pretrained(
+                    self.hparams.model_name_or_path,
+                    from_tf=bool(".ckpt" in self.hparams.model_name_or_path),
+                    config=self.config,
+                    cache_dir=cache_dir,
+                )
+            else:
+                self.seq2seq_model = BartForConditionalGeneration.from_pretrained(
+                    self.hparams.model_name_or_path,
+                    from_tf=bool(".ckpt" in self.hparams.model_name_or_path),
+                    config=self.config,
+                    cache_dir=cache_dir,
+                )
         else:
             self.seq2seq_model = seq2seq_model
 
@@ -475,10 +491,17 @@ class BaseTransformer(pl.LightningModule):
                 setattr(self.config, p, getattr(self.hparams, p))
 
         if tokenizer is None:
-            self.tokenizer = AutoTokenizer.from_pretrained(
-                self.hparams.tokenizer_name if self.hparams.tokenizer_name else self.hparams.model_name_or_path,
-                cache_dir=cache_dir,
-            )
+            if "mbart" in hparams.old_model_name:
+                self.tokenizer = AutoTokenizer.from_pretrained(
+                    self.hparams.tokenizer_name if self.hparams.tokenizer_name else self.hparams.model_name_or_path,
+                    cache_dir=cache_dir,
+                    src_lang=hparams.src_lang, tgt_lang=hparams.tgt_lang
+                )
+            else:
+                self.tokenizer = AutoTokenizer.from_pretrained(
+                    self.hparams.tokenizer_name if self.hparams.tokenizer_name else self.hparams.model_name_or_path,
+                    cache_dir=cache_dir,
+                )
         else:
             self.tokenizer: PreTrainedTokenizer = tokenizer
 

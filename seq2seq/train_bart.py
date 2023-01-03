@@ -10,6 +10,9 @@ MODEL_DIR = "/home/lr/shenjl/research/ref-code/PrefixTuning/models"
 # example: python train_run.py keyword temp_keyword _
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Prefix Tuning training args.')
+    parser.add_argument('--old_model_name', type=str, default='facebook/bart-large',
+                        help='pretrained old (frozen) model name to load from transformers',
+                        choices=['facebook/bart-large', 'facebook/mbart-large-50'])  # added by sgallon
     parser.add_argument('--mode', type=str, default='xsum', help='',
                         choices=['xsum', 'xsum_news', 'xsum_news_sport', 'toy_xsum_10', 'japanese_xlsum'])
     parser.add_argument('--tuning_mode', type=str, default='prefixtune', help='',
@@ -152,9 +155,8 @@ if __name__ == '__main__':
     Model_FILE = '{}{}'.format(folder_name, Model_FILE)
     # print(Model_FILE)
 
-    OLD_MODEL = 'facebook/bart-large'
-    if args.mode == 'japanese_xlsum':
-        OLD_MODEL = 'facebook/mbart-large-50'
+    # OLD_MODEL = 'facebook/bart-large'
+    OLD_MODEL = args.old_model_name
 
     app = "--optim_prefix {} --preseqlen {} --prefix_mode {} --format_mode {} " \
           "--gradient_accumulation_steps {} --learning_rate {} --weight_decay {} --seed {} " \
