@@ -133,7 +133,7 @@ class PrefixTransformer(pl.LightningModule):
 
 
         if tokenizer is None:
-            if "mbart" in hparams.old_model_name:
+            if "mbart" in hparams.model_name_or_path:
                 self.tokenizer = AutoTokenizer.from_pretrained(
                     self.hparams.tokenizer_name if self.hparams.tokenizer_name else self.hparams.model_name_or_path,
                     cache_dir=cache_dir,
@@ -153,7 +153,7 @@ class PrefixTransformer(pl.LightningModule):
 
         self.seq2seq_model_type = MODEL_MODES[mode]
         if seq2seq_model is None:
-            if "mbart" in hparams.old_model_name:
+            if "mbart" in hparams.model_name_or_path:
                 self.seq2seq_model = MBartForConditionalGeneration.from_pretrained(
                     self.hparams.model_name_or_path,
                     from_tf=bool(".ckpt" in self.hparams.model_name_or_path),
@@ -491,7 +491,7 @@ class BaseTransformer(pl.LightningModule):
                 setattr(self.config, p, getattr(self.hparams, p))
 
         if tokenizer is None:
-            if "mbart" in hparams.old_model_name:
+            if "mbart" in hparams.model_name_or_path:
                 self.tokenizer = AutoTokenizer.from_pretrained(
                     self.hparams.tokenizer_name if self.hparams.tokenizer_name else self.hparams.model_name_or_path,
                     cache_dir=cache_dir,
