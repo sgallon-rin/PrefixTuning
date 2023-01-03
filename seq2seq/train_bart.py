@@ -11,7 +11,7 @@ MODEL_DIR = "/home/lr/shenjl/research/ref-code/PrefixTuning/models"
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Prefix Tuning training args.')
     parser.add_argument('--mode', type=str, default='xsum', help='',
-                        choices=['xsum', 'xsum_news', 'xsum_news_sport', 'toy_xsum_10'])
+                        choices=['xsum', 'xsum_news', 'xsum_news_sport', 'toy_xsum_10', 'japanese_xlsum'])
     parser.add_argument('--tuning_mode', type=str, default='prefixtune', help='',
                         choices=['prefixtune', 'finetune', 'finetune-top', 'bothtune', 'adaptertune'])
     parser.add_argument('--optim_prefix', type=str, default='yes', help='', choices=['yes', 'no'])
@@ -116,6 +116,19 @@ if __name__ == '__main__':
                                                          val_max_target_length, test_max_target_length)
         if args.fp16 == 'yes':
             xsum_app += ' --fp16 --fp16_opt_level O1 '
+    elif args.mode == 'japanese_xlsum':  # japanese xlsum dataset
+        data_dir = os.path.join(XSUM_DATA_DIR, 'japanese_xlsum')
+        folder_name = os.path.join(MODEL_DIR, "japanese_xlsum/")
+        max_source_length = 1024
+        max_target_length = 60
+        val_max_target_length = 60
+        test_max_target_length = 100
+        xsum_app = ' --max_source_length {} --max_target_length {} --val_max_target_length {} ' \
+                   '--test_max_target_length {} '.format(max_source_length, max_target_length,
+                                                         val_max_target_length, test_max_target_length)
+        if args.fp16 == 'yes':
+            xsum_app += ' --fp16 --fp16_opt_level O1 '
+        xsum_app += ' --src_lang ja_XX --tgt_lang ja_XX '  # japanese lang for mBART
     if not os.path.isdir(folder_name):
         os.mkdir(folder_name)
 
@@ -140,6 +153,8 @@ if __name__ == '__main__':
     # print(Model_FILE)
 
     OLD_MODEL = 'facebook/bart-large'
+    if args.mode == 'japanese_xlsum':
+        OLD_MODEL = 'facebook/mbart-large-50'
 
     app = "--optim_prefix {} --preseqlen {} --prefix_mode {} --format_mode {} " \
           "--gradient_accumulation_steps {} --learning_rate {} --weight_decay {} --seed {} " \
