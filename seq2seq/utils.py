@@ -230,37 +230,37 @@ class Seq2SeqDataset(AbstractSeq2SeqDataset):
     #LISA
     def collate_fn(self, batch) -> Dict[str, torch.Tensor]:
         """Call prepare_seq2seq_batch."""
-        # batch_encoding: Dict[str, torch.Tensor] = self.tokenizer.prepare_seq2seq_batch(
-        #     [x["src_texts"] for x in batch],
-        #     # src_lang=self.src_lang,
-        #     tgt_texts=[x["tgt_texts"] for x in batch],
-        #     # tgt_lang=self.tgt_lang,
-        #     max_length=self.max_source_length,
-        #     max_target_length=self.max_target_length,
-        #     return_tensors="pt",
-        #     # add_prefix_space=self.add_prefix_space,
-        # ).data
-        # FutureWarning:
+        batch_encoding: Dict[str, torch.Tensor] = self.tokenizer.prepare_seq2seq_batch(
+            [x["src_texts"] for x in batch],
+            # src_lang=self.src_lang,
+            tgt_texts=[x["tgt_texts"] for x in batch],
+            # tgt_lang=self.tgt_lang,
+            max_length=self.max_source_length,
+            max_target_length=self.max_target_length,
+            return_tensors="pt",
+            # add_prefix_space=self.add_prefix_space,
+        ).data
+        # FutureWarning:  # only for transformers 4.x --sgallon
         # `prepare_seq2seq_batch` is deprecated and will be removed in version 5 of HuggingFace Transformers. Use the regular
         # `__call__` method to prepare your inputs and the tokenizer under the `as_target_tokenizer` context manager to prepare
         # your targets.
-        batch_encoding: Dict[str, torch.Tensor] = self.tokenizer(
-            [x["src_texts"] for x in batch],
-            truncation=True,
-            padding='longest',
-            max_length=self.max_source_length,
-            return_tensors="pt"
-        )
-        with self.tokenizer.as_target_tokenizer():
-            labels = self.tokenizer(
-                [x["tgt_texts"] for x in batch],
-                truncation=True,
-                padding='longest',
-                max_length=self.max_target_length,
-                return_tensors="pt"
-            )
-        batch_encoding["labels"] = labels["input_ids"]
-        batch_encoding = batch_encoding.data
+        # batch_encoding: Dict[str, torch.Tensor] = self.tokenizer(
+        #     [x["src_texts"] for x in batch],
+        #     truncation=True,
+        #     padding='longest',
+        #     max_length=self.max_source_length,
+        #     return_tensors="pt"
+        # )
+        # with self.tokenizer.as_target_tokenizer():
+        #     labels = self.tokenizer(
+        #         [x["tgt_texts"] for x in batch],
+        #         truncation=True,
+        #         padding='longest',
+        #         max_length=self.max_target_length,
+        #         return_tensors="pt"
+        #     )
+        # batch_encoding["labels"] = labels["input_ids"]
+        # batch_encoding = batch_encoding.data
         batch_encoding["ids"] = torch.tensor([x["id"] for x in batch])
         return batch_encoding
 
