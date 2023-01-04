@@ -12,7 +12,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Prefix Tuning training args.')
     parser.add_argument('--old_model_name', type=str, default='facebook/bart-large',
                         help='pretrained old (frozen) model name to load from transformers',
-                        choices=['facebook/bart-large', 'facebook/mbart-large-50'])  # added by sgallon
+                        choices=['facebook/bart-large', 'facebook/mbart-large-cc25'])  # added by sgallon
     parser.add_argument('--mode', type=str, default='xsum', help='',
                         choices=['xsum', 'xsum_news', 'xsum_news_sport', 'toy_xsum_10', 'japanese_xlsum'])
     parser.add_argument('--tuning_mode', type=str, default='prefixtune', help='',
