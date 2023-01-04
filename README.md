@@ -99,6 +99,8 @@ https://worksheets.codalab.org/worksheets/0x16e0c8e7ab1f4b22aaccddc8b586541f
 
 https://github.com/XiangLi1999/PrefixTuning/issues/29
 
+python version: 3.6.8
+
 ```shell
 conda env create -f environment.yml -n prefix-tuning
 conda activate prefix-tuning
@@ -107,21 +109,13 @@ pip install -e .
 pip install pytorch-lightning==0.9.0
 ```
 
-
-### old
-
-```shell
-conda create -n prefix_tuning python=3.8
-conda activate prefix_tuning
-! pip install transformers/
-pip install pytorch-lightning GitPython rouge_score sacrebleu
+For mbart, use `transformers` 4.18.0 (as the old version in this repo cannot identify `facebook/mbart-large-50`).
+See: https://huggingface.co/docs/transformers/migration
+```
+pip install transformers[sentencepiece]
 ```
 
+pytorch version:
 ```
-python=3.8
-# transformers # in this rep
-pytorch-lightning
-GitPython
-rouge_score
-sacrebleu
+pip install torch==1.10.1+cu113 torchvision==0.11.2+cu113 torchaudio==0.10.1 -f https://download.pytorch.org/whl/cu113/torch_stable.html
 ```
