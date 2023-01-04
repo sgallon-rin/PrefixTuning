@@ -247,6 +247,7 @@ class Seq2SeqDataset(AbstractSeq2SeqDataset):
         batch_encoding: Dict[str, torch.Tensor] = self.tokenizer(
             [x["src_texts"] for x in batch],
             truncation=True,
+            padding='longest',
             max_length=self.max_source_length,
             return_tensors="pt"
         )
@@ -254,6 +255,7 @@ class Seq2SeqDataset(AbstractSeq2SeqDataset):
             labels = self.tokenizer(
                 [x["tgt_texts"] for x in batch],
                 truncation=True,
+                padding='longest',
                 max_length=self.max_target_length,
                 return_tensors="pt"
             )
