@@ -18,7 +18,7 @@ from rouge_score import rouge_scorer, scoring
 from torch import nn
 from torch.utils.data import Dataset, Sampler
 
-from transformers import BartTokenizer, MBartTokenizer, MBart50Tokenizer
+from transformers import BartTokenizer, MBartTokenizer
 from transformers.file_utils import cached_property
 
 
@@ -61,7 +61,7 @@ def label_smoothed_nll_loss(lprobs, target, epsilon, ignore_index=-100):
 
 def encode_line(tokenizer, line, max_length, pad_to_max_length=True, return_tensors="pt"):
     """Only used by LegacyDataset"""
-    extra_kw = {"add_prefix_space": True} if isinstance(tokenizer, BartTokenizer) or isinstance(tokenizer, MBartTokenizer) or isinstance(tokenizer, MBart50Tokenizer) else {}
+    extra_kw = {"add_prefix_space": True} if isinstance(tokenizer, BartTokenizer) or isinstance(tokenizer, MBartTokenizer) else {}
     return tokenizer(
         [line],
         max_length=max_length,
@@ -129,7 +129,7 @@ class AbstractSeq2SeqDataset(Dataset):
         self.pad_token_id = self.tokenizer.pad_token_id
         self.src_lang = src_lang
         self.tgt_lang = tgt_lang
-        self.add_prefix_space = isinstance(self.tokenizer, BartTokenizer) or isinstance(self.tokenizer, MBartTokenizer) or isinstance(self.tokenizer, MBart50Tokenizer)
+        self.add_prefix_space = isinstance(self.tokenizer, BartTokenizer) or isinstance(self.tokenizer, MBartTokenizer)
 
     def __len__(self):
         return len(self.src_lens)
