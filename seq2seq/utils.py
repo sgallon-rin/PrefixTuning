@@ -18,7 +18,7 @@ from rouge_score import rouge_scorer, scoring
 from torch import nn
 from torch.utils.data import Dataset, Sampler
 
-from transformers import BartTokenizer
+from transformers import BartTokenizer, MBartTokenizer, MBart50Tokenizer
 from transformers.file_utils import cached_property
 
 
@@ -61,7 +61,7 @@ def label_smoothed_nll_loss(lprobs, target, epsilon, ignore_index=-100):
 
 def encode_line(tokenizer, line, max_length, pad_to_max_length=True, return_tensors="pt"):
     """Only used by LegacyDataset"""
-    extra_kw = {"add_prefix_space": True} if isinstance(tokenizer, BartTokenizer) else {}
+    extra_kw = {"add_prefix_space": True} if isinstance(tokenizer, BartTokenizer) or isinstance(tokenizer, MBartTokenizer) or isinstance(tokenizer, MBart50Tokenizer) else {}
     return tokenizer(
         [line],
         max_length=max_length,
@@ -129,7 +129,7 @@ class AbstractSeq2SeqDataset(Dataset):
         self.pad_token_id = self.tokenizer.pad_token_id
         self.src_lang = src_lang
         self.tgt_lang = tgt_lang
-        self.add_prefix_space = isinstance(self.tokenizer, BartTokenizer)
+        self.add_prefix_space = isinstance(self.tokenizer, BartTokenizer) or isinstance(self.tokenizer, MBartTokenizer) or isinstance(self.tokenizer, MBart50Tokenizer)
 
     def __len__(self):
         return len(self.src_lens)
@@ -230,16 +230,33 @@ class Seq2SeqDataset(AbstractSeq2SeqDataset):
     #LISA
     def collate_fn(self, batch) -> Dict[str, torch.Tensor]:
         """Call prepare_seq2seq_batch."""
-        batch_encoding: Dict[str, torch.Tensor] = self.tokenizer.prepare_seq2seq_batch(
+        # batch_encoding: Dict[str, torch.Tensor] = self.tokenizer.prepare_seq2seq_batch(
+        #     [x["src_texts"] for x in batch],
+        #     # src_lang=self.src_lang,
+        #     tgt_texts=[x["tgt_texts"] for x in batch],
+        #     # tgt_lang=self.tgt_lang,
+        #     max_length=self.max_source_length,
+        #     max_target_length=self.max_target_length,
+        #     return_tensors="pt",
+        #     # add_prefix_space=self.add_prefix_space,
+        # ).data
+        # FutureWarning:
+        # `prepare_seq2seq_batch` is deprecated and will be removed in version 5 of HuggingFace Transformers. Use the regular
+        # `__call__` method to prepare your inputs and the tokenizer under the `as_target_tokenizer` context manager to prepare
+        # your targets.
+        batch_encoding: Dict[str, torch.Tensor] = self.tokenizer(
             [x["src_texts"] for x in batch],
-            # src_lang=self.src_lang,
-            tgt_texts=[x["tgt_texts"] for x in batch],
-            # tgt_lang=self.tgt_lang,
             max_length=self.max_source_length,
-            max_target_length=self.max_target_length,
-            return_tensors="pt",
-            # add_prefix_space=self.add_prefix_space,
-        ).data
+            return_tensors="pt"
+        )
+        with self.tokenizer.as_target_tokenizer():
+            labels = self.tokenizer(
+                [x["tgt_texts"] for x in batch],
+                max_length=self.max_target_length,
+                return_tensors="pt"
+            )
+        batch_encoding["labels"] = labels["input_ids"]
+        batch_encoding = batch_encoding.data
         batch_encoding["ids"] = torch.tensor([x["id"] for x in batch])
         return batch_encoding
 
