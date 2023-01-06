@@ -109,13 +109,17 @@ pip install -e .
 pip install pytorch-lightning==0.9.0
 ```
 
-For mbart, use `transformers` 4.18.0 (as the old version in this repo cannot identify `facebook/mbart-large-50`).
-See: https://huggingface.co/docs/transformers/migration
-```
-pip install transformers[sentencepiece]
-```
+~~For mbart, use `transformers` 4.18.0 (as the old version in this repo cannot identify `facebook/mbart-large-50`).
+See: https://huggingface.co/docs/transformers/migration~~
+
+Use the modified `transformers` in this repo. Source code for BART model has been changed for prefix-tuning.
+
+Use mbart `facebook/mbart-large-cc25` instead, as `facebook/mbart-large-50` requires transfromers 4.x.
+
+~~pip install transformers[sentencepiece]~~
 
 pytorch version:
 ```
-pip install torch==1.10.1+cu113 torchvision==0.11.2+cu113 torchaudio==0.10.1 -f https://download.pytorch.org/whl/cu113/torch_stable.html
+pip3 install torch==1.8.2 torchvision==0.9.2 torchaudio==0.8.2 --extra-index-url https://download.pytorch.org/whl/lts/1.8/cu111
 ```
+~~pip install torch==1.10.1+cu113 torchvision==0.11.2+cu113 torchaudio==0.10.1 -f https://download.pytorch.org/whl/cu113/torch_stable.html~~
