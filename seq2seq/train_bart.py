@@ -59,6 +59,9 @@ if __name__ == '__main__':
     parser.add_argument('--prefix_model_path', type=str, default=None, help='')
     parser.add_argument('--finetune_model_path', type=str, default=None, help='')
     # parser.add_argument('--submit', type=str, default='no', help='')
+    parser.add_argument("--rouge_lang", type=str, default="english", required=False,
+                        help="language for multilingual ROUGE scoring, refer to: "
+                             "https://github.com/csebuetnlp/xl-sum/tree/master/multilingual_rouge_scoring")
 
     args = parser.parse_args()
 
@@ -160,10 +163,10 @@ if __name__ == '__main__':
 
     app = "--optim_prefix {} --preseqlen {} --prefix_mode {} --format_mode {} " \
           "--gradient_accumulation_steps {} --learning_rate {} --weight_decay {} --seed {} " \
-          "--mid_dim {} --use_dropout {} --prefix_dropout {} ". \
+          "--mid_dim {} --use_dropout {} --prefix_dropout {} --rouge_lang {}". \
         format(args.optim_prefix, args.preseqlen, args.prefix_mode, args.format_mode,
                args.gradient_accumulation_steps, args.learning_rate, args.weight_decay, args.seed,
-               args.mid_dim, args.use_dropout, args.dropout)
+               args.mid_dim, args.use_dropout, args.dropout, args.rouge_lang)
 
     if args.prefix_mode == 'embedding':
         app += ' --parametrize_emb {} '.format(args.parametrize_emb)
