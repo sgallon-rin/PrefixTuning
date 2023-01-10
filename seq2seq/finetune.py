@@ -23,7 +23,8 @@ from utils import (
     Seq2SeqDataset,
     assert_all_frozen,
     # calculate_bleu,
-    calculate_rouge,
+    # calculate_rouge,
+    calculate_multi_rouge,
     flatten_list,
     freeze_params,
     get_git_info,
@@ -234,7 +235,8 @@ class PrefixSummarizationModule(PrefixTransformer):
         }
 
     def calc_generative_metrics(self, preds, target) -> Dict:
-        return calculate_rouge(preds, target)
+        return calculate_multi_rouge(preds, target, lang=self.hparams.rouge_lang)
+        # return calculate_rouge(preds, target)
         # return calculate_bleu(preds, target)
 
     def _generative_step(self, batch: dict) -> dict:
@@ -378,6 +380,9 @@ class PrefixSummarizationModule(PrefixTransformer):
         parser.add_argument("--label_smoothing", type=float, default=0.0, required=False)
         parser.add_argument("--src_lang", type=str, default="", required=False)
         parser.add_argument("--tgt_lang", type=str, default="", required=False)
+        parser.add_argument("--rouge_lang", type=str, default="english", required=False,
+                            help="language for multilingual ROUGE scoring, refer to: "
+                                 "https://github.com/csebuetnlp/xl-sum/tree/master/multilingual_rouge_scoring")
         parser.add_argument("--eval_beams", type=int, default=None, required=False)
         parser.add_argument(
             "--val_metric", type=str, default=None, required=False, choices=["bleu", "rouge2", "loss", None]
@@ -560,7 +565,8 @@ class SummarizationModule(BaseTransformer):
         }
 
     def calc_generative_metrics(self, preds, target) -> Dict:
-        return calculate_rouge(preds, target)
+        return calculate_multi_rouge(preds, target, lang=self.hparams.rouge_lang)
+        # return calculate_rouge(preds, target)
 
     def _generative_step(self, batch: dict) -> dict:
         t0 = time.time()

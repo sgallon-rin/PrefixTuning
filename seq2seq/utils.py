@@ -423,6 +423,27 @@ def calculate_rouge(output_lns: List[str], reference_lns: List[str], use_stemmer
     return {k: round(v.mid.fmeasure * 100, 4) for k, v in result.items()}
 
 
+def calculate_multi_rouge(output_lns: List[str], reference_lns: List[str], use_stemmer=True, lang="english") -> Dict:
+    """
+    multilingual ROUGE score
+    ref: https://github.com/csebuetnlp/xl-sum/tree/master/multilingual_rouge_scoring
+    Supported language names for stemming:
+    - bengali, hindi, turkish, arabic, danish, dutch, english, finnish, french, german, hungarian, italian, norwegian,
+      portuguese, romanian, russian, spanish, swedish
+    Supported language names for word segmentation:
+    - chinese, thai, japanese, burmese
+    """
+    scorer = rouge_scorer.RougeScorer(ROUGE_KEYS, use_stemmer=use_stemmer, lang=lang)
+    aggregator = scoring.BootstrapAggregator()
+
+    for reference_ln, output_ln in zip(reference_lns, output_lns):
+        scores = scorer.score(reference_ln, output_ln)
+        aggregator.add_scores(scores)
+
+    result = aggregator.aggregate()
+    return {k: round(v.mid.fmeasure * 100, 4) for k, v in result.items()}
+
+
 # Utilities for freezing parameters and checking whether they are frozen
 
 

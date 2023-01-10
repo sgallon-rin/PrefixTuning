@@ -123,3 +123,15 @@ pytorch version:
 pip3 install torch==1.8.2 torchvision==0.9.2 torchaudio==0.8.2 --extra-index-url https://download.pytorch.org/whl/lts/1.8/cu111
 ```
 ~~pip install torch==1.10.1+cu113 torchvision==0.11.2+cu113 torchaudio==0.10.1 -f https://download.pytorch.org/whl/cu113/torch_stable.html~~
+
+### Multilingual ROUGE score
+
+Refer to: https://github.com/csebuetnlp/xl-sum/tree/master/multilingual_rouge_scoring
+
+```
+git clone git@github.com:csebuetnlp/xl-sum.git
+cd xl-sum/multilingual_rouge_scoring
+pip3 install -r requirements.txt
+python3 -m unidic download # for japanese segmentation
+pip3 install --upgrade ./
+```
