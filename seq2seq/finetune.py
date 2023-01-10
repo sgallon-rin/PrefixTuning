@@ -380,9 +380,9 @@ class PrefixSummarizationModule(PrefixTransformer):
         parser.add_argument("--label_smoothing", type=float, default=0.0, required=False)
         parser.add_argument("--src_lang", type=str, default="", required=False)
         parser.add_argument("--tgt_lang", type=str, default="", required=False)
-        # parser.add_argument("--rouge_lang", type=str, default="english", required=False,
-        #                     help="language for multilingual ROUGE scoring, refer to: "
-        #                          "https://github.com/csebuetnlp/xl-sum/tree/master/multilingual_rouge_scoring")
+        parser.add_argument("--rouge_lang", type=str, default="english", required=False,
+                            help="language for multilingual ROUGE scoring, refer to: "
+                                 "https://github.com/csebuetnlp/xl-sum/tree/master/multilingual_rouge_scoring")
         parser.add_argument("--eval_beams", type=int, default=None, required=False)
         parser.add_argument(
             "--val_metric", type=str, default=None, required=False, choices=["bleu", "rouge2", "loss", None]
