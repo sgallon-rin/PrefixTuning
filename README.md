@@ -126,6 +126,8 @@ pip3 install torch==1.8.2 torchvision==0.9.2 torchaudio==0.8.2 --extra-index-url
 
 ### Multilingual ROUGE score
 
+Use (language-specific) Multilingual ROUGE score instead of the original one for English to avoid tokenizing/stemming problems.
+
 Refer to: https://github.com/csebuetnlp/xl-sum/tree/master/multilingual_rouge_scoring
 
 ```
