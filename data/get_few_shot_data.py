@@ -5,6 +5,12 @@
 # @Email       : shcmsgallon@outlook.com
 # @File        : get_few_shot_data.py
 # @Description : get few shot data for train and val, keep test the same
+"""
+Follow original paper, few-shot sizes {50, 100, 200, 500};
+For each size, we sample 5 different datasets and average over 2 training random seeds;
+We also sample a dev split (with dev size = 30% × training size) for each training set.
+We use the dev split to choose hyperparameters and perform early stopping.
+"""
 
 import random
 import os
@@ -12,7 +18,8 @@ import shutil
 
 POLICIES = ["random", "head"]
 
-DATA_DIR = "/Users/sgallon/data/xsum_data/japanese_xlsum"
+# DATA_DIR = "/Users/sgallon/data/xsum_data/japanese_xlsum"
+DATA_DIR = "/Users/shenjl/Documents/data/japanese_xlsum"
 
 
 def get_few_shot_data(data_dir, out_dir, train_size, val_size, policy="head", seed=123):
@@ -57,6 +64,7 @@ def select(source_list, target_list, size, policy, seed):
         res_source = source_list[::size]
         res_target = target_list[::size]
     elif policy == "random":
+        print("Random seed: {}".format(seed))
         random.seed(seed)
         idxs = random.sample(list(range(le)), k=size)
         res_source = [source_list[i] for i in idxs]
@@ -68,8 +76,14 @@ def select(source_list, target_list, size, policy, seed):
 
 if __name__ == "__main__":
     nums = [50, 100, 200, 500]
+    seeds = [123, 234, 345, 456, 567]
     for num in nums:
-        out_dir = DATA_DIR + "_" + str(num)
-        if not os.path.exists(out_dir):
-            os.mkdir(out_dir)
-        get_few_shot_data(DATA_DIR, out_dir, num, int(num * 0.3), 'head')
+        # out_dir = DATA_DIR + "_" + str(num)
+        # if not os.path.exists(out_dir):
+        #     os.mkdir(out_dir)
+        # get_few_shot_data(DATA_DIR, out_dir, num, int(num * 0.3), 'head')
+        for seed in seeds:
+            out_dir = DATA_DIR + "_" + str(num) + "_seed" + str(seed)
+            if not os.path.exists(out_dir):
+                os.mkdir(out_dir)
+            get_few_shot_data(DATA_DIR, out_dir, num, int(num * 0.3), 'random', seed)
