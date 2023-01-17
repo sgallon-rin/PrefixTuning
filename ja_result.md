@@ -31,5 +31,34 @@ seed=114514, epoch=10, bsz=16
 | 12  |    prefix     | 5e-4 |      70       |  43.97  |  19.29  |  32.40  |
 | 13  |    prefix     | 5e-4 |      90       |  43.41  |  19.06  |  32.35  |
 | 14  |    prefix     | 5e-4 |      150      |  44.10  |  19.84  |  33.17  |
-| 15  |    prefix     | 5e-4 |      300      |         |         |         |
+| 15  |    prefix     | 5e-4 |      300      |  41.49  |  17.40  |  31.11  |
+|     |               | 5e-4 |               |         |         |         |
+
+
+## Exp. 03 Hyperparameter tuning
+
+tuning method=prefix, prefix len-100, lr=5e-4
+
+epoch, seed, bsz
+
+| no  | epoch |  seed  | bsz | ROUGE-1 | ROUGE-2 | ROUGE-3 |
+|:---:|:-----:|:------:|:---:|:-------:|:-------:|:-------:|
+| 06  |  10   | 114514 | 16  |  44.66  |  20.18  |  33.25  |
+| 16  |  10   |  514   | 16  |  44.25  |  20.03  |  33.05  |
+| 17  |  10   | 114514 |  8  |         |         |         |
+| 18  |  30   | 114514 | 16  |         |         |         |
+| 19  |  10   |  2333  | 16  |         |         |         |
+|     |       |        |     |         |         |         |
+|     |       |        |     |         |         |         |
+|     |       |        |     |         |         |         |
+
+
+## Exp. 04 few-shot
+
+Follow original paper, few-shot sizes {50, 100, 200, 500};
+
+For each size, we sample 5 different datasets and average over 2 training random seeds;
+
+We also sample a dev split (with dev size = 30% × training size) for each training set. 
+We use the dev split to choose hyperparameters and perform early stopping.
 

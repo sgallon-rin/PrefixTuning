@@ -62,7 +62,7 @@ if __name__ == '__main__':
     parser.add_argument("--rouge_lang", type=str, default="english", required=False,
                         help="language for multilingual ROUGE scoring, refer to: "
                              "https://github.com/csebuetnlp/xl-sum/tree/master/multilingual_rouge_scoring")
-    parser.add_argument("few_shot", type=int, default=None, required=False, choices=[50, 100, 200, 500],
+    parser.add_argument("--few_shot", type=int, default=None, required=False, choices=[50, 100, 200, 500],
                         help="few-shot train size for japanese_xlsum")
 
     args = parser.parse_args()
