@@ -62,6 +62,8 @@ if __name__ == '__main__':
     parser.add_argument("--rouge_lang", type=str, default="english", required=False,
                         help="language for multilingual ROUGE scoring, refer to: "
                              "https://github.com/csebuetnlp/xl-sum/tree/master/multilingual_rouge_scoring")
+    parser.add_argument("few_shot", type=int, default=None, required=False, choices=[50, 100, 200, 500],
+                        help="few-shot train size for japanese_xlsum")
 
     args = parser.parse_args()
 
@@ -123,8 +125,13 @@ if __name__ == '__main__':
         if args.fp16 == 'yes':
             xsum_app += ' --fp16 --fp16_opt_level O1 '
     elif args.mode == 'japanese_xlsum':  # japanese xlsum dataset
-        data_dir = os.path.join(XSUM_DATA_DIR, 'japanese_xlsum')
-        folder_name = os.path.join(MODEL_DIR, "japanese_xlsum/")
+        if not args.few_shot:
+            data_dir = os.path.join(XSUM_DATA_DIR, 'japanese_xlsum')
+            folder_name = os.path.join(MODEL_DIR, "japanese_xlsum/")
+        else:  # use few-shot data
+            print("Using few-shot data, number of shots is {}".format(args.few_shot))
+            data_dir = os.path.join(XSUM_DATA_DIR, 'japanese_xlsum_{}'.format(args.few_shot))
+            folder_name = os.path.join(MODEL_DIR, "japanese_xlsum_{}/".format(args.few_shot))
         max_source_length = 1024
         max_target_length = 60
         val_max_target_length = 60
