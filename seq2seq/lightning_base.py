@@ -761,11 +761,11 @@ def generic_train(
     odir = Path(model.hparams.output_dir)
     odir.mkdir(exist_ok=True)
 
-    if checkpoint_callback is None:
-        checkpoint_callback = pl.callbacks.ModelCheckpoint(
-            filepath=args.output_dir, prefix="checkpoint", monitor="val_loss", mode="min", save_top_k=1
-            # dirpath=args.output_dir, monitor="val_loss", mode="min", save_top_k=1
-        )
+    # if checkpoint_callback is None:
+    #     checkpoint_callback = pl.callbacks.ModelCheckpoint(
+    #         filepath=args.output_dir, prefix="checkpoint", monitor="val_loss", mode="min", save_top_k=1
+    #         # dirpath=args.output_dir, monitor="val_loss", mode="min", save_top_k=1
+    #     )
     # add custom checkpoints
     # LISA
     # if checkpoint_callback is None:
@@ -774,8 +774,9 @@ def generic_train(
     #     )
 
     #get_checkpoint_callback(args.output_dir, model.val_metric, args.save_top_k, lower_is_better)
-    checkpoint_callback = OurModelCheckPoint(filepath=args.output_dir, prefix="checkpoint", monitor="rouge2", mode="max", save_top_k=-1)
+    # checkpoint_callback = OurModelCheckPoint(filepath=args.output_dir, prefix="checkpoint", monitor="rouge2", mode="max", save_top_k=-1)
     # checkpoint_callback = OurModelCheckPoint(dirpath=args.output_dir, monitor="rouge2", mode="max", save_top_k=-1)
+    checkpoint_callback = False  # disable lightning checkpoint, takes too much disk space - by sgallon
 
     # checkpoint_callback = OurModelCheckPoint(
     #     filepath=os.path.join(args.output_dir, exp),
@@ -800,8 +801,6 @@ def generic_train(
 
     train_params["accumulate_grad_batches"] = args.accumulate_grad_batches
     # train_params['progress_bar_refresh_rate'] = 0
-    # train_params["enable_checkpointing"] = args.enable_lightning_checkpoint
-    train_params["enable_checkpointing"] = False
 
     print('the max number of epochs is {}'.format(args.max_epochs))
     print('early stopping', early_stopping_callback)
@@ -813,7 +812,7 @@ def generic_train(
         # weights_summary=None,
         callbacks=[logging_callback] + extra_callbacks,
         logger=logger,
-        # checkpoint_callback=checkpoint_callback,
+        checkpoint_callback=checkpoint_callback,
         #early_stop_callback=early_stopping_callback,
         **train_params,
     )
