@@ -62,8 +62,32 @@ epoch, seed, bsz
 
 Follow original paper, few-shot sizes {50, 100, 200, 500};
 
-For each size, we sample 5 different datasets and average over 2 training random seeds;
+For each size, we sample 5 different datasets (seeds=123, 234, 345, 456, 567) and average over 2 training random seeds;
 
 We also sample a dev split (with dev size = 30% × training size) for each training set. 
 We use the dev split to choose hyperparameters and perform early stopping.
+
+Hyperparams:
+
+For prefix-tune: prefix len=100, lr=5e-4, gradient_accumulation_step=3, epoch=10, bsz=8
+
+For fine-tune: lr=5e-5, gradient_accumulation_step=3, epoch=10, bsz=8, seed=114514
+
+| method | dataset size | dataset seed | ROUGE-1 | ROUGE-2 | ROUGE-L |
+|:------:|:------------:|:------------:|:-------:|:-------:|:-------:|
+|        |      50      |              |         |         |         |
+|        |              |              |         |         |         |
+|        |              |              |         |         |         |
+|        |              |              |         |         |         |
+|        |              |              |         |         |         |
+|        |              |              |         |         |         |
+|        |              |              |         |         |         |
+|        |              |              |         |         |         |
+|        |              |              |         |         |         |
+|        |              |              |         |         |         |
+|        |              |              |         |         |         |
+|        |              |              |         |         |         |
+
+
+
 
