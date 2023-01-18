@@ -800,6 +800,7 @@ def generic_train(
 
     train_params["accumulate_grad_batches"] = args.accumulate_grad_batches
     # train_params['progress_bar_refresh_rate'] = 0
+    train_params["enable_checkpointing"] = args.enable_lightning_checkpoint
 
     print('the max number of epochs is {}'.format(args.max_epochs))
     print('early stopping', early_stopping_callback)

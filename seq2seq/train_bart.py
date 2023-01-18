@@ -66,6 +66,8 @@ if __name__ == '__main__':
                         help="few-shot train size for japanese_xlsum")
     parser.add_argument("--few_shot_seed", type=int, default=None, required=False,
                         help="few-shot dataset seed for japanese_xlsum")
+    parser.add_argument("--enable_lightning_checkpoint", action="store_true",
+                        help="Save lightning logs or not (better not, the model will save by itself, logs are huge)")
 
     args = parser.parse_args()
 
