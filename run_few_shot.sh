@@ -1,5 +1,5 @@
 #!/bin/bash
-# run few-shot experiment
+# run few-shot experiment, prefix-tune
 # few_shot=(50 100 200 500)
 # seeds=(123 234 345 456 567)
 for seed in 123 234 345 456 567
