@@ -38,7 +38,17 @@ LANGS = ["arabic", "czech", "german", "english", "spanish",
 # Languages used in the experiment
 USED_LANGS = ["arabic", "english", "spanish", "french", "hindi",
               "japanese", "korean", "burmese", "russian", "turkish", "chinese_simplified"]
-
+XLSUM_LANGS_DICT = {"arabic": "ar_AR",
+                    "english": "en_XX",
+                    "spanish": "es_XX",
+                    "french": "fr_XX",
+                    "hindi": "hi_IN",
+                    "japanese": "ja_XX",
+                    "korean": "kk_KZ",
+                    "burmese": "my_MM",
+                    "russian": "ru_RU",
+                    "turkish": "tr_TR",
+                    "chinese_simplified": "zh_CN"}
 
 # DATA_DIR = "/Users/sgallon/data/xlsum/japanese_XLSum_v2.0"
 # TRAIN_FILE = os.path.join(DATA_DIR, "japanese_train.jsonl")

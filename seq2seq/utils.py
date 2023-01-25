@@ -513,3 +513,15 @@ def assert_all_frozen(model):
 #     """Yield successive n-sized chunks from lst."""
 #     for i in range(0, len(lst), n):
 #         yield lst[i : i + n]
+
+XLSUM_LANGS_DICT = {"arabic": "ar_AR",
+                    "english": "en_XX",
+                    "spanish": "es_XX",
+                    "french": "fr_XX",
+                    "hindi": "hi_IN",
+                    "japanese": "ja_XX",
+                    "korean": "kk_KZ",
+                    "burmese": "my_MM",
+                    "russian": "ru_RU",
+                    "turkish": "tr_TR",
+                    "chinese_simplified": "zh_CN"}

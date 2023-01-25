@@ -1,11 +1,11 @@
 import argparse
 import os
 
-# added by sgallon
+from utils import XLSUM_LANGS_DICT
+
 HOME_DIR = "/home/lr/shenjl/research/ref-code/PrefixTuning"
 XSUM_DATA_DIR = "/home/lr/shenjl/research/ref-code/PrefixTuning/data_seq2seq"
 MODEL_DIR = "/home/lr/shenjl/research/ref-code/PrefixTuning/models"
-# end by sgallon
 
 # example: python train_run.py keyword temp_keyword _
 if __name__ == '__main__':
@@ -14,7 +14,7 @@ if __name__ == '__main__':
                         help='pretrained old (frozen) model name to load from transformers',
                         choices=['facebook/bart-large', 'facebook/mbart-large-cc25'])  # added by sgallon
     parser.add_argument('--mode', type=str, default='xsum', help='',
-                        choices=['xsum', 'xsum_news', 'xsum_news_sport', 'toy_xsum_10', 'japanese_xlsum'])
+                        choices=['xsum', 'xsum_news', 'xsum_news_sport', 'toy_xsum_10', 'japanese_xlsum', 'xlsum'])
     parser.add_argument('--tuning_mode', type=str, default='prefixtune', help='',
                         choices=['prefixtune', 'finetune', 'finetune-top', 'bothtune', 'adaptertune'])
     parser.add_argument('--optim_prefix', type=str, default='yes', help='', choices=['yes', 'no'])
@@ -59,6 +59,7 @@ if __name__ == '__main__':
     parser.add_argument('--prefix_model_path', type=str, default=None, help='')
     parser.add_argument('--finetune_model_path', type=str, default=None, help='')
     # parser.add_argument('--submit', type=str, default='no', help='')
+    # unknown bug, do not set rouge_lang in train time; test only
     parser.add_argument("--rouge_lang", type=str, default="english", required=False,
                         help="language for multilingual ROUGE scoring, refer to: "
                              "https://github.com/csebuetnlp/xl-sum/tree/master/multilingual_rouge_scoring")
@@ -68,6 +69,8 @@ if __name__ == '__main__':
                         help="few-shot dataset seed for japanese_xlsum")
     # parser.add_argument("--enable_lightning_checkpoint", action="store_true",
     #                     help="Save lightning logs or not (better not, the model will save by itself, logs are huge)")
+    parser.add_argument("--xlsum_lang", type=str, default=None, required=False, choices=XLSUM_LANGS_DICT.keys(),
+                        help="Language for XLSUM dataset to use")
 
     args = parser.parse_args()
 
@@ -150,6 +153,23 @@ if __name__ == '__main__':
         if args.fp16 == 'yes':
             xsum_app += ' --fp16 --fp16_opt_level O1 '
         xsum_app += ' --src_lang ja_XX --tgt_lang ja_XX '  # japanese lang for mBART
+    elif args.mode == 'xlsum':  # xlsum dataset
+        if not args.xlsum_lang:
+            raise(RuntimeError, "Please specify xlsum_lang for XLSUM!\nCandidate languages: {}".format(XLSUM_LANGS_DICT))
+        lang_code = XLSUM_LANGS_DICT[args.xlsum_lang]
+        data_dir = os.path.join(XSUM_DATA_DIR, '{}_xlsum'.format(args.xlsum_lang))
+        folder_name = os.path.join(MODEL_DIR, "{}_xlsum/".format(args.xlsum_lang))
+        max_source_length = 1024
+        max_target_length = 60
+        val_max_target_length = 60
+        test_max_target_length = 100
+        xsum_app = ' --max_source_length {} --max_target_length {} --val_max_target_length {} ' \
+                   '--test_max_target_length {} '.format(max_source_length, max_target_length,
+                                                         val_max_target_length, test_max_target_length)
+        if args.fp16 == 'yes':
+            xsum_app += ' --fp16 --fp16_opt_level O1 '
+        xsum_app += ' --src_lang {} --tgt_lang {} '.format(lang_code, lang_code)
+
     if not os.path.isdir(folder_name):
         os.mkdir(folder_name)
 
