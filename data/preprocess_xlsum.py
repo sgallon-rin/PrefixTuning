@@ -59,6 +59,9 @@ XLSUM_LANGS_DICT = {"arabic": "ar_AR",
 INPUT_ROOT = "/Users/shenjl/Documents/data/xlsum"
 OUTPUT_ROOT = "/Users/shenjl/Documents/data/xlsum_preprocessed"
 
+# INPUT_ROOT = "/Users/sgallon/data/xlsum"
+# OUTPUT_ROOT = "/Users/sgallon/data/xlsum_preprocessed"
+
 
 def load_jsonl(filename: str) -> List[Dict[str, str]]:
     with open(filename, "r", encoding='utf-8') as f:
@@ -70,14 +73,20 @@ def load_jsonl(filename: str) -> List[Dict[str, str]]:
 def make_data(data: List[Dict[str, str]]) -> (List[str], List[str]):
     res_summary = []
     res_text = []
-    for d in data:
-        summary = d.get("summary") + "\n"
-        text = d.get("text") + "\n"
-        if not summary or not text:
-            print("Got empty summary/text, skip.")
+    for idx, d in enumerate(data):
+        try:
+            summary = d["summary"]
+            text = d["text"]
+        except KeyError:
+            print("Got empty summary or text for idx {}, skip.".format(idx))
             continue
-        res_summary.append(summary)
-        res_text.append(text)
+        summary = summary.strip()
+        text = text.strip()
+        if not summary or not text:
+            print("Got empty summary or text for idx {}, skip.".format(idx))
+            continue
+        res_summary.append(summary + "\n")
+        res_text.append(text + "\n")
     return res_summary, res_text
 
 
@@ -158,3 +167,8 @@ if __name__ == "__main__":
         preprocessor = Preprocessor(lang)
         preprocessor.preprocess()
         print("Done for lang {}\n\n".format(lang))
+
+    # lang = "chinese_simplified"
+    # print("Preprocessing XLSUM {}".format(lang))
+    # preprocessor = Preprocessor(lang)
+    # preprocessor.preprocess()
