@@ -10,7 +10,6 @@
 
 import random
 import os
-import shutil
 
 POLICIES = ["random", "head"]
 
@@ -74,8 +73,8 @@ def select(source_list, target_list, size, policy, seed):
         print("Warning: required size ({}) larger than source size ({})! Return original input.".format(size, le))
         return source_list, target_list
     if policy == "head":
-        res_source = source_list[::size]
-        res_target = target_list[::size]
+        res_source = source_list[:size]
+        res_target = target_list[:size]
     elif policy == "random":
         print("Random seed: {}".format(seed))
         random.seed(seed)
