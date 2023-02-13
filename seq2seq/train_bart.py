@@ -14,7 +14,7 @@ if __name__ == '__main__':
                         help='pretrained old (frozen) model name to load from transformers',
                         choices=['facebook/bart-large', 'facebook/mbart-large-cc25'])  # added by sgallon
     parser.add_argument('--mode', type=str, default='xsum', help='',
-                        choices=['xsum', 'xsum_news', 'xsum_news_sport', 'toy_xsum_10', 'japanese_xlsum', 'xlsum'])
+                        choices=['xsum', 'xsum_news', 'xsum_news_sport', 'toy_xsum_10', 'japanese_xlsum', 'xlsum', 'xlsum_head', 'multilingual_xlsum_head'])
     parser.add_argument('--tuning_mode', type=str, default='prefixtune', help='',
                         choices=['prefixtune', 'finetune', 'finetune-top', 'bothtune', 'adaptertune'])
     parser.add_argument('--optim_prefix', type=str, default='yes', help='', choices=['yes', 'no'])
@@ -159,6 +159,42 @@ if __name__ == '__main__':
         lang_code = XLSUM_LANGS_DICT[args.xlsum_lang]
         data_dir = os.path.join(XSUM_DATA_DIR, '{}_xlsum'.format(args.xlsum_lang))
         folder_name = os.path.join(MODEL_DIR, "{}_xlsum/".format(args.xlsum_lang))
+        max_source_length = 1024
+        max_target_length = 60
+        val_max_target_length = 60
+        test_max_target_length = 100
+        xsum_app = ' --max_source_length {} --max_target_length {} --val_max_target_length {} ' \
+                   '--test_max_target_length {} '.format(max_source_length, max_target_length,
+                                                         val_max_target_length, test_max_target_length)
+        if args.fp16 == 'yes':
+            xsum_app += ' --fp16 --fp16_opt_level O1 '
+        xsum_app += ' --src_lang {} --tgt_lang {} '.format(lang_code, lang_code)
+    elif args.mode == 'xlsum_head':  # xlsum dataset head (11 langs, equal size to korean which has the fewest data)
+        if not args.xlsum_lang:
+            raise(RuntimeError, "Please specify xlsum_lang for XLSUM!\nCandidate languages: {}".format(XLSUM_LANGS_DICT))
+        lang_code = XLSUM_LANGS_DICT[args.xlsum_lang]
+        data_dir = os.path.join(XSUM_DATA_DIR, '{}_xlsum_head'.format(args.xlsum_lang))
+        if args.xlsum_lang == "korean":  # korean has fewest data == base size
+            data_dir = os.path.join(XSUM_DATA_DIR, '{}_xlsum'.format(args.xlsum_lang))
+        folder_name = os.path.join(MODEL_DIR, "{}_xlsum_head/".format(args.xlsum_lang))
+        max_source_length = 1024
+        max_target_length = 60
+        val_max_target_length = 60
+        test_max_target_length = 100
+        xsum_app = ' --max_source_length {} --max_target_length {} --val_max_target_length {} ' \
+                   '--test_max_target_length {} '.format(max_source_length, max_target_length,
+                                                         val_max_target_length, test_max_target_length)
+        if args.fp16 == 'yes':
+            xsum_app += ' --fp16 --fp16_opt_level O1 '
+        xsum_app += ' --src_lang {} --tgt_lang {} '.format(lang_code, lang_code)
+    elif args.mode == 'multilingual_xlsum_head':  # multilingual xlsum dataset head, train same prefix on 11 langs, switch lang by hand (run 11 times)
+        if not args.xlsum_lang:
+            raise(RuntimeError, "Please specify xlsum_lang for XLSUM!\nCandidate languages: {}".format(XLSUM_LANGS_DICT))
+        lang_code = XLSUM_LANGS_DICT[args.xlsum_lang]
+        data_dir = os.path.join(XSUM_DATA_DIR, '{}_xlsum_head'.format(args.xlsum_lang))
+        if args.xlsum_lang == "korean":  # korean has fewest data == base size
+            data_dir = os.path.join(XSUM_DATA_DIR, '{}_xlsum'.format(args.xlsum_lang))
+        folder_name = os.path.join(MODEL_DIR, "multilingual_xlsum_head/")
         max_source_length = 1024
         max_target_length = 60
         val_max_target_length = 60
