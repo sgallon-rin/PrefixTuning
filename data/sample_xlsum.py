@@ -27,6 +27,8 @@ def get_few_shot_data(data_dir, out_dir, train_size, val_size, test_size, policy
     assert data_dir != out_dir, "Input and output dir must be different!"
     print("Processing data dir: {}".format(data_dir))
     print("Output data dir: {}".format(out_dir))
+    if not os.path.exists(out_dir):
+        os.mkdir(out_dir)
     print("Sample train size: {}\nSample val size: {}\nSample test size: {}\nSample policy: {}\nRandom seed: {}"
           .format(train_size, val_size, test_size, policy, seed))
     # train
