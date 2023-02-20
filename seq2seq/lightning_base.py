@@ -199,7 +199,7 @@ class PrefixTransformer(pl.LightningModule):
 
         # print(config_prefix)
 
-        if self.hparams.prefixModel_name_or_path is not None:
+        if self.hparams.prefixModel_name_or_path:
             print('loading from {}'.format(hparams.prefixModel_name_or_path))
             self.model = PrefixTuning.from_pretrained(self.hparams.prefixModel_name_or_path,
                         cache_dir=cache_dir,
@@ -322,7 +322,7 @@ class PrefixTransformer(pl.LightningModule):
 
         parser.add_argument(
             "--prefixModel_name_or_path",
-            default=None,
+            default="",
             type=str,
             help="Path to pretrained prefix model or model identifier from huggingface.co/models",
         )

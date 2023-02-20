@@ -56,7 +56,7 @@ if __name__ == '__main__':
     parser.add_argument('--mid_dim', type=int, default=512, help='')
     parser.add_argument('--use_deep', type=str, default='no', help='')
 
-    parser.add_argument('--prefix_model_path', type=str, default=None, help='')
+    parser.add_argument('--prefix_model_path', type=str, default="", help='')
     parser.add_argument('--finetune_model_path', type=str, default=None, help='')
     # parser.add_argument('--submit', type=str, default='no', help='')
     # unknown bug, do not set rouge_lang in train time; test only
