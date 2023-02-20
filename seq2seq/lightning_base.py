@@ -322,7 +322,7 @@ class PrefixTransformer(pl.LightningModule):
 
         parser.add_argument(
             "--prefixModel_name_or_path",
-            default="",
+            default=None,
             type=str,
             help="Path to pretrained prefix model or model identifier from huggingface.co/models",
         )
