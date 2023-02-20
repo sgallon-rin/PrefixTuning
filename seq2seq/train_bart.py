@@ -258,7 +258,6 @@ if __name__ == '__main__':
     if args.do_train == 'yes':
         COMMANDLINE = 'python finetune.py ' \
                       '--model_name_or_path {} ' \
-                      '--prefixModel_name_or_path {} ' \
                       '--output_dir {} ' \
                       '--data_dir {} ' \
                       '--tuning_mode {} ' \
@@ -270,9 +269,11 @@ if __name__ == '__main__':
                       '--learning_rate {} ' \
                       '--train_batch_size {} ' \
                       '--eval_batch_size {} ' \
-                      '--num_train_epochs {} '.format(OLD_MODEL, args.prefix_model_path, Model_FILE, data_dir, args.tuning_mode, args.preseqlen,
+                      '--num_train_epochs {} '.format(OLD_MODEL, Model_FILE, data_dir, args.tuning_mode, args.preseqlen,
                                                       args.label_smoothing, args.use_deep,
                                                       args.gpus, args.learning_rate, args.bsz, args.bsz, args.epoch)
+        if args.prefix_model_path:
+            COMMANDLINE += '--prefixModel_name_or_path {} '.format(args.prefix_model_path)
     else:
         if args.tuning_mode == 'finetune':
             assert args.finetune_model_path is not None
