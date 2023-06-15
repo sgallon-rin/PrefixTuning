@@ -9,6 +9,7 @@ _TOKENIZER_FOR_DOC = "MBartTokenizer"
 MBART_PRETRAINED_MODEL_ARCHIVE_LIST = [
     "facebook/mbart-large-cc25",
     "facebook/mbart-large-en-ro",
+    "facebook/mbart-large-50",
     # See all multilingual BART models at https://huggingface.co/models?filter=mbart
 ]
 
